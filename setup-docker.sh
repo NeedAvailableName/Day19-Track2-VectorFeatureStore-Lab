@@ -32,14 +32,18 @@ if [ ! -d ".venv" ]; then
   fi
 fi
 # shellcheck source=/dev/null
-source .venv/bin/activate
+if [ -f ".venv/Scripts/activate" ]; then
+  source .venv/Scripts/activate
+else
+  source .venv/bin/activate
+fi
 
 # ── 4. Install lite + docker extras ─────────────────────────────────────
 if command -v uv >/dev/null 2>&1; then
   uv pip install -r requirements.txt -r requirements-full.txt
 else
-  pip install -q -U pip
-  pip install -q -r requirements.txt -r requirements-full.txt
+  # pip install -q -U pip
+  pip install -r requirements.txt -r requirements-full.txt
 fi
 
 jupytext --to notebook --update notebooks/*.py 2>/dev/null || jupytext --to notebook notebooks/*.py
@@ -71,7 +75,7 @@ cat <<EOF
 
 Activate the venv and continue:
 
-    source .venv/bin/activate
+    source .venv/bin/activate      # (or .venv/Scripts/activate on Windows)
     make api       # start FastAPI on :8000
     make lab       # open Jupyter on :8888
 
